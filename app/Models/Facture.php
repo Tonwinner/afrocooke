@@ -40,10 +40,28 @@ class Facture extends Model
         return $this->belongsTo(Reservation::class);
     }
 
+    /**
+     * Génère un numéro de facture unique.
+     */
     public static function genererNumero(): string
     {
         $annee = now()->format('Y');
-        $dernier = self::whereYear('created_at', $annee)->count() + 1;
-        return 'FAC-' . $annee . '-' . str_pad($dernier, 5, '0', STR_PAD_LEFT);
+        $prefix = 'FAC-' . $annee . '-';
+        
+        // Chercher le dernier numéro utilisé (et NON PAS compter)
+        $dernier = self::where('numero_facture', 'LIKE', $prefix . '%')
+                       ->orderBy('numero_facture', 'DESC')
+                       ->first();
+        
+        if ($dernier) {
+            // Extraire le chiffre des 5 derniers caractères
+            $dernierNumero = (int) substr($dernier->numero_facture, -5);
+            $nouveauNumero = $dernierNumero + 1;
+        } else {
+            $nouveauNumero = 1;
+        }
+        
+        return $prefix . str_pad($nouveauNumero, 5, '0', STR_PAD_LEFT);
     }
+
 }

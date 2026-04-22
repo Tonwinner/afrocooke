@@ -126,8 +126,8 @@
                 {{-- Chef principal --}}
                 <div class="bg-beige-50 rounded-2xl overflow-hidden border border-beige-200/60 group hover:shadow-lg hover:shadow-dark/5 transition-all duration-300">
                     <div class="h-64 overflow-hidden">
-                        @if(file_exists(public_path('images/equipe/chef-amina.jpg')))
-                            <img src="{{ asset('images/equipe/chef-amina.jpg') }}" alt="Chef Amina" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        @if(file_exists(public_path('images/equipe/chef-cuisto.jpg')))
+                            <img src="{{ asset('images/equipe/chef-cuisto.jpg') }}" alt="Chef Amina" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         @else
                             <div class="w-full h-full bg-gradient-to-br from-amber-50 to-beige-100 flex flex-col items-center justify-center">
                                 <div class="w-20 h-20 rounded-2xl bg-amber-100 flex items-center justify-center mb-3">

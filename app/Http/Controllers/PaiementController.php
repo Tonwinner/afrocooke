@@ -102,14 +102,27 @@ class PaiementController extends Controller
             $reservation->update(['statut' => 'confirmee']);
 
             // Générer la facture (si pas déjà existante)
-            if (!$reservation->facture) {
-                Facture::create([
-                    'reservation_id' => $reservation->id,
-                    'numero_facture' => Facture::genererNumero(),
-                    'montant_ht' => round($reservation->montant_total / 1.18, 2),
-                    'montant_ttc' => $reservation->montant_total,
-                ]);
-            }
+          if (!$reservation->facture) {
+    // Vérifier une dernière fois si une facture n'a pas été créée entre-temps
+           $existingFacture = Facture::where('reservation_id', $reservation->id)->first();
+    
+          if (!$existingFacture) {
+        $numeroFacture = Facture::genererNumero();
+        
+        // Sécurité : vérifier que ce numéro n'existe pas déjà
+        if (Facture::where('numero_facture', $numeroFacture)->exists()) {
+            // En cas de conflit, générer avec timestamp (solution d'urgence)
+            $numeroFacture = 'FAC-' . now()->format('Y') . '-' . now()->format('His');
+        }
+        
+        Facture::create([
+            'reservation_id' => $reservation->id,
+            'numero_facture' => $numeroFacture,
+            'montant_ht' => round($reservation->montant_total / 1.18, 2),
+            'montant_ttc' => $reservation->montant_total,
+        ]);
+    }
+}
 
             // Charger les relations pour l'affichage
             $reservation->load('creneau.atelier', 'paiement', 'facture');
