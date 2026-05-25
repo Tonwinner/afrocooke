@@ -298,7 +298,7 @@
         </div>
     </footer>
 
-    {{-- ═══ JAVASCRIPT ═══ --}}
+    {{-- JAVASCRIPT --}}
     <script>
     (function() {
         /* ─── Menu mobile ─── */

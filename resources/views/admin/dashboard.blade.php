@@ -34,7 +34,6 @@
         - Un label descriptif en haut
         - Le chiffre principal en gros
         - Un sous-texte explicatif
-        - Une icône SVG dans un carré coloré à droite
     --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
 
@@ -173,7 +172,6 @@
         ═══════════════════════════════════════════════════
         GRAPHIQUE — Revenus des 6 derniers mois
         ═══════════════════════════════════════════════════
-        Barres HTML/CSS animées au chargement via JS.
         Hauteur proportionnelle au montant maximum.
         Hover : affiche le montant exact + change la teinte.
     --}}

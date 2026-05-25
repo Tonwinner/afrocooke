@@ -43,8 +43,8 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('logistique.stocks.index'));
         }
 
-        // Client par défaut → page d'accueil
-        return redirect()->intended(route('home'));
+        // Client par défaut → dashboard
+        return redirect()->intended('/dashboard');
     }
 
     /**

@@ -94,4 +94,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// ===== DASHBOARD GLOBAL (Breeze) =====
+Route::middleware(['auth'])->get('/dashboard', function () {
+
+    $user = auth()->user();
+
+    return match($user->role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'chef' => redirect()->route('chef.planning'),
+        'logistique' => redirect()->route('logistique.stocks.index'),
+        default => redirect()->route('compte.index'),
+    };
+
+})->name('dashboard');
+
 require __DIR__.'/auth.php';

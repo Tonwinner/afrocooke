@@ -1,21 +1,32 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     /**
-     * Modifier la colonne methode pour accepter 'kkiapay'
-     * en plus de 'fedapay'.
+     * Ajouter les nouvelles méthodes de paiement
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE paiements MODIFY methode ENUM('fedapay', 'kkiapay', 'carte', 'mobile_money') DEFAULT 'kkiapay'");
+        Schema::table('paiements', function (Blueprint $table) {
+            $table->string('methode')
+                ->default('kkiapay')
+                ->change();
+        });
     }
 
+    /**
+     * Retour arrière
+     */
     public function down(): void
     {
-        DB::statement("ALTER TABLE paiements MODIFY methode ENUM('fedapay') DEFAULT 'fedapay'");
+        Schema::table('paiements', function (Blueprint $table) {
+            $table->string('methode')
+                ->default('fedapay')
+                ->change();
+        });
     }
 };
