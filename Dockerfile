@@ -19,6 +19,8 @@ RUN php artisan optimize:clear || true
 
 RUN composer install --no-dev --optimize-autoloader
 
+RUN php artisan storage:link
+
 RUN npm install && npm run build
 
 RUN apt-get remove -y nodejs npm && apt-get autoremove -y

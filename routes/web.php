@@ -168,4 +168,27 @@ Route::get('/check-images', function() {
         'link_exists' => $linkExists
     ]);
 });
+
+Route::get('/fix-storage', function() {
+    // Crée le dossier storage
+    $storagePath = storage_path('app/public/photos/ateliers');
+    if (!is_dir($storagePath)) {
+        mkdir($storagePath, 0777, true);
+    }
+    
+    // Crée le lien symbolique
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+    
+    if (!file_exists($link)) {
+        symlink($target, $link);
+    }
+    
+    return response()->json([
+        'storage_created' => is_dir($storagePath),
+        'link_created' => file_exists($link),
+        'message' => 'Storage et lien symbolique créés'
+    ]);
+});
+
 require __DIR__.'/auth.php';
