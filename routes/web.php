@@ -108,5 +108,28 @@ Route::middleware(['auth'])->get('/dashboard', function () {
 
 })->name('dashboard');
 
+Route::get('/import-ateliers', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed --class=AtelierSeeder --force');
+        $output = \Illuminate\Support\Facades\Artisan::output();
+        
+        $ateliersCount = App\Models\Atelier::count();
+        $creneauxCount = App\Models\Creneau::count();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Ateliers importés avec succès !',
+            'ateliers_count' => $ateliersCount,
+            'creneaux_count' => $creneauxCount,
+            'artisan_output' => $output
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
 
 require __DIR__.'/auth.php';
