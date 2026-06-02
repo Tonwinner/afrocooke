@@ -107,29 +107,65 @@ Route::middleware(['auth'])->get('/dashboard', function () {
     };
 
 })->name('dashboard');
+// Route pour importer les ateliers depuis le seeder (à supprimer après utilisation)
+// ===== ROUTES DE TEST TEMPORAIRES (À SUPPRIMER APRÈS) =====
 
+// Test ateliers
+Route::get('/debug-ateliers', function() {
+    if (!Illuminate\Support\Facades\Schema::hasTable('ateliers')) {
+        return "❌ La table 'ateliers' n'existe pas !";
+    }
+    
+    $count = App\Models\Atelier::count();
+    $ateliers = App\Models\Atelier::limit(10)->get(['id', 'titre', 'slug', 'statut']);
+    
+    return response()->json([
+        'table_exists' => true,
+        'ateliers_count' => $count,
+        'ateliers' => $ateliers
+    ]);
+});
+
+// Import des ateliers
 Route::get('/import-ateliers', function() {
     try {
         \Illuminate\Support\Facades\Artisan::call('db:seed --class=AtelierSeeder --force');
-        $output = \Illuminate\Support\Facades\Artisan::output();
-        
         $ateliersCount = App\Models\Atelier::count();
         $creneauxCount = App\Models\Creneau::count();
         
         return response()->json([
             'success' => true,
-            'message' => 'Ateliers importés avec succès !',
             'ateliers_count' => $ateliersCount,
-            'creneaux_count' => $creneauxCount,
-            'artisan_output' => $output
+            'creneaux_count' => $creneauxCount
         ]);
     } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ], 500);
+        return "❌ Erreur : " . $e->getMessage();
     }
 });
 
+// Test paiement
+Route::get('/test-paiement', function() {
+    return response()->json([
+        'mode' => config('services.kkiapay.mode', 'non configuré'),
+        'has_public_key' => !empty(config('services.kkiapay.public_key')),
+        'has_secret_key' => !empty(config('services.kkiapay.secret_key')),
+        'has_api_key' => !empty(config('services.kkiapay.api_key')),
+        'message' => 'Clés configurées : ' . (empty(config('services.kkiapay.public_key')) ? '❌ Non' : '✅ Oui')
+    ]);
+});
+
+// Vérification des images
+Route::get('/check-images', function() {
+    $imagesPath = storage_path('app/public/photos/ateliers');
+    $imagesExist = is_dir($imagesPath);
+    $imagesCount = $imagesExist ? count(glob($imagesPath . '/*')) : 0;
+    
+    $linkExists = file_exists(public_path('storage'));
+    
+    return response()->json([
+        'storage_exists' => $imagesExist,
+        'images_count' => $imagesCount,
+        'link_exists' => $linkExists
+    ]);
+});
 require __DIR__.'/auth.php';
