@@ -108,57 +108,5 @@ Route::middleware(['auth'])->get('/dashboard', function () {
 
 })->name('dashboard');
 
-// ===== ROUTES DE DEBUG (À SUPPRIMER APRÈS UTILISATION) =====
-Route::get('/debug-users', function() {
-    if (!Illuminate\Support\Facades\Schema::hasTable('users')) {
-        return "❌ La table 'users' n'existe pas ! Exécutez d'abord les migrations.";
-    }
-    
-    $count = App\Models\User::count();
-    $users = App\Models\User::limit(10)->get(['id', 'name', 'email', 'role']);
-    
-    return response()->json([
-        'table_exists' => true,
-        'users_count' => $count,
-        'users' => $users,
-        'message' => $count == 0 ? "⚠️ Aucun utilisateur. Exécutez le seeder." : "✅ Des utilisateurs existent."
-    ]);
-});
-
-Route::get('/full-setup', function() {
-    $report = [];
-    
-    try {
-        // Exécute les migrations
-        Illuminate\Support\Facades\Artisan::call('migrate --force');
-        $report['migrations'] = '✅ Exécutées';
-        
-        // Exécute le seeder AdminSeeder
-        Illuminate\Support\Facades\Artisan::call('db:seed --class=AdminSeeder --force');
-        $report['seeders'] = '✅ Exécutés';
-        
-        // Vérification
-        $admin = App\Models\User::where('email', 'admin@atelieradeux.com')->first();
-        $report['admin_found'] = $admin ? '✅ Oui' : '❌ Non';
-        $report['total_users'] = App\Models\User::count();
-        
-        return response()->json($report);
-        
-    } catch (\Exception $e) {
-        return "❌ Erreur : " . $e->getMessage();
-    }
-});
-
-Route::get('/check-schema', function() {
-    if (!Illuminate\Support\Facades\Schema::hasTable('users')) {
-        return "❌ La table users n'existe pas";
-    }
-    
-    $columns = Illuminate\Support\Facades\Schema::getColumnListing('users');
-    return response()->json([
-        'columns' => $columns,
-        'has_role_column' => in_array('role', $columns)
-    ]);
-});
 
 require __DIR__.'/auth.php';
