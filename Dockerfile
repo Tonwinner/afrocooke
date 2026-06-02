@@ -40,7 +40,7 @@ RUN npm install && npm run build
 # Nettoie les outils inutiles
 RUN apt-get remove -y nodejs npm && apt-get autoremove -y
 
-RUN php artisan optimize:clear
+RUN touch database/database.sqlite
 
 RUN touch storage/logs/laravel.log
 RUN chmod -R 777 storage
