@@ -10,33 +10,34 @@ RUN apt-get update && apt-get install -y \
     npm \
     && docker-php-ext-install pdo_pgsql
 
-# Active le module mod_rewrite pour les routes Laravel
+# Active le module mod_rewrite
 RUN a2enmod rewrite
+
+# Configure Apache pour utiliser le dossier public de Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Configure le répertoire de travail
 WORKDIR /var/www/html
 
-# Copie le code source dans le conteneur
+# Copie le code source
 COPY . .
 
-# 🔧 CORRECTION : Configure Apache pour utiliser le dossier public/
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/apache2.conf
-
-# Télécharge et installe Composer
+# Installe Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Donne les droits d'écriture à Apache sur les dossiers storage et cache
+# Donne les droits d'écriture
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Installe les dépendances PHP (sauf celles de développement)
+# Installe les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Installe les dépendances Node.js et compile les assets
+# Installe les dépendances Node.js et compile
 RUN npm install && npm run build
 
-# Nettoyage pour réduire la taille de l'image
+# Nettoie les outils inutiles
 RUN apt-get remove -y nodejs npm && apt-get autoremove -y
 
 # Expose le port 80
