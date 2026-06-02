@@ -40,6 +40,16 @@ RUN npm install && npm run build
 # Nettoie les outils inutiles
 RUN apt-get remove -y nodejs npm && apt-get autoremove -y
 
+RUN php artisan config:clear
+RUN php artisan cache:clear
+RUN php artisan view:clear
+
+RUN touch storage/logs/laravel.log
+RUN chmod -R 777 storage
+RUN chmod -R 777 bootstrap/cache
+
+EXPOSE 80
+
 # Expose le port 80
 EXPOSE 80
 
