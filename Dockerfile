@@ -32,4 +32,5 @@ RUN php artisan migrate --force
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+# Au lieu de CMD ["apache2-foreground"], utilisez ceci pour debug :
+CMD php artisan serve --host=0.0.0.0 --port=10000
