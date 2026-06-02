@@ -108,57 +108,12 @@ Route::middleware(['auth'])->get('/dashboard', function () {
 
 })->name('dashboard');
 
-Route::get('/run-seeder', function() {
-    // Évite les exécutions accidentelles en production
-    if (app()->environment('production')) {
-        // Compte administrateur
-        User::updateOrCreate(
-            ['email' => 'admin@atelieradeux.com'],
-            [
-                'name' => 'Administrateur',
-                'password' => Hash::make('password123'),
-                'role' => 'admin',
-                'telephone' => '+229 97 00 00 00',
-            ]
-        );
-        
-        // Compte chef
-        User::updateOrCreate(
-            ['email' => 'chef@atelieradeux.com'],
-            [
-                'name' => 'Chef Amina',
-                'password' => Hash::make('password123'),
-                'role' => 'chef',
-                'telephone' => '+229 96 00 00 00',
-            ]
-        );
-        
-        // Compte logistique
-        User::updateOrCreate(
-            ['email' => 'logistique@atelieradeux.com'],
-            [
-                'name' => 'Responsable Stock',
-                'password' => Hash::make('password123'),
-                'role' => 'logistique',
-                'telephone' => '+229 95 00 00 00',
-            ]
-        );
-        
-        // Compte client
-        User::updateOrCreate(
-            ['email' => 'client@atelieradeux.com'],
-            [
-                'name' => 'Client Test',
-                'password' => Hash::make('password123'),
-                'role' => 'client',
-                'telephone' => '+229 94 00 00 00',
-            ]
-        );
-        
-        return "Seeders exécutés avec succès !";
-    }
-    
-    return "Non autorisé";
+Route::get('/check-users', function() {
+    $users = \App\Models\User::all();
+    return response()->json([
+        'count' => $users->count(),
+        'users' => $users->map(fn($u) => ['email' => $u->email, 'role' => $u->role])
+    ]);
 });
 
 require __DIR__.'/auth.php';
