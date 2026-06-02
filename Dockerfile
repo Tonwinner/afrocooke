@@ -27,6 +27,9 @@ RUN chmod -R 775 storage bootstrap/cache
 RUN chmod -R 777 storage
 RUN chmod -R 777 bootstrap/cache
 
+# Exécute les migrations
+RUN php artisan migrate --force
+
 EXPOSE 80
 
 CMD ["apache2-foreground"]
