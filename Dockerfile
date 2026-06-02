@@ -42,3 +42,6 @@ RUN apt-get remove -y nodejs npm && apt-get autoremove -y
 
 # Expose le port 80
 EXPOSE 80
+
+
+CMD ["apache2-foreground"]
