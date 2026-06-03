@@ -7,39 +7,26 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("
-            ALTER TABLE paiements
-            DROP CONSTRAINT IF EXISTS paiements_methode_check
-        ");
-
-        DB::statement("
-            ALTER TABLE paiements
-            ADD CONSTRAINT paiements_methode_check
-            CHECK (
-                methode IN (
-                    'kkiapay',
-                    'especes'
-                )
-            )
-        ");
+        $driver = DB::connection()->getDriverName();
+        
+        if ($driver === 'pgsql') {
+            // PostgreSQL : suppression de la contrainte CHECK
+            DB::statement('ALTER TABLE paiements DROP CONSTRAINT IF EXISTS paiements_methode_check');
+        } elseif ($driver === 'mysql') {
+            // MySQL : suppression de la contrainte CHECK
+            DB::statement('ALTER TABLE paiements DROP CHECK paiements_methode_check');
+        }
+        // SQLite n'a pas besoin de cette modification
     }
 
     public function down(): void
     {
-        DB::statement("
-            ALTER TABLE paiements
-            DROP CONSTRAINT IF EXISTS paiements_methode_check
-        ");
-
-        DB::statement("
-            ALTER TABLE paiements
-            ADD CONSTRAINT paiements_methode_check
-            CHECK (
-                methode IN (
-                    'fedapay',
-                    'especes'
-                )
-            )
-        ");
+        $driver = DB::connection()->getDriverName();
+        
+        if ($driver === 'pgsql') {
+            DB::statement('ALTER TABLE paiements ADD CONSTRAINT paiements_methode_check CHECK (methode IN (\'fedapay\', \'kkiapay\'))');
+        } elseif ($driver === 'mysql') {
+            DB::statement('ALTER TABLE paiements ADD CONSTRAINT paiements_methode_check CHECK (methode IN ("fedapay", "kkiapay"))');
+        }
     }
 };
